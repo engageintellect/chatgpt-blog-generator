@@ -5,7 +5,7 @@ class MyDocument extends Document {
     return (
       <Html
         lang="en"
-        className="dark:bg-gradient-to-b dark:from-slate-800 dark:to-sky-900 dark:text-white"
+        className="dark:bg-gradient-to-b dark:from-slate-800 dark:to-neutral-900 dark:text-white"
       >
         <Head>
           <link rel="icon" href="/favicon.ico" />

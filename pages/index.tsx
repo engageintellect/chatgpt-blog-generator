@@ -13,24 +13,22 @@ import ResizablePanel from "../components/ResizablePanel";
 
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
-  const [bio, setBio] = useState("");
+  const [post, setPost] = useState("");
   const [vibe, setVibe] = useState<VibeType>("Professional");
-  const [generatedBios, setGeneratedBios] = useState<String>("");
+  const [generatedPost, setGeneratedPost] = useState<String>("");
 
-  console.log("Streamed response: ", generatedBios);
+  console.log("Streamed response: ", generatedPost);
 
   const prompt =
     vibe === "Funny"
-      ? `Generate 2 funny twitter bios with no hashtags and clearly labeled "1." and "2.". Make sure there is a joke in there and it's a little ridiculous. Make sure each generated bio is at max 20 words and base it on this context: ${bio}${
-          bio.slice(-1) === "." ? "" : "."
+      ? `Generate 2 funny twitter bios with no hashtags and clearly labeled "1." and "2.". Make sure there is a joke in there and it's a little ridiculous. Make sure each generated bio is at max 20 words and base it on this context: ${post}${
+          post.slice(-1) === "." ? "" : "."
         }`
-      : `Generate 2 ${vibe} twitter bios with no hashtags and clearly labeled "1." and "2.". Make sure each generated bio is at least 14 words and at max 20 words and base them on this context: ${bio}${
-          bio.slice(-1) === "." ? "" : "."
-        }`;
+      : `${post}${post.slice(-1) === "." ? "" : "."}`;
 
-  const generateBio = async (e: any) => {
+  const generatePost = async (e: any) => {
     e.preventDefault();
-    setGeneratedBios("");
+    setGeneratedPost("");
     setLoading(true);
     const response = await fetch("/api/generate", {
       method: "POST",
@@ -53,6 +51,8 @@ const Home: NextPage = () => {
       return;
     }
 
+    console.log("data: ", data);
+
     const reader = data.getReader();
     const decoder = new TextDecoder();
     let done = false;
@@ -61,11 +61,14 @@ const Home: NextPage = () => {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-      setGeneratedBios((prev) => prev + chunkValue);
+      setGeneratedPost((prev) => prev + chunkValue);
     }
 
     setLoading(false);
   };
+
+  // console.log(generatePost);
+  console.log("Streamed response 2: ", generatedPost);
 
   return (
     <div className="flex max-w-5xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
@@ -86,10 +89,10 @@ const Home: NextPage = () => {
           <p>Star on GitHub</p>
         </a>
         <h1 className="sm:text-6xl dark:text-white text-4xl max-w-2xl font-bold text-slate-900">
-          Generate your next Twitter bio in seconds
+          Generate your next blog post in seconds
         </h1>
         <p className="text-slate-500 mt-5 dark:text-gray-50">
-          18,167 bios generated so far.
+          18,167 Reponses generated so far.
         </p>
         <div className="max-w-xl w-full">
           <div className="flex mt-10 items-center space-x-3">
@@ -97,38 +100,29 @@ const Home: NextPage = () => {
               <div className="text-white absolute">1</div>
             </div>
             <p className="text-left font-medium">
-              Copy your current bio{" "}
+              Ask your question{" "}
               <span className="text-slate-500 dark:text-gray-200">
-                (or write a few sentences about yourself)
+                (or describe your issue)
               </span>
               .
             </p>
           </div>
           <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            value={post}
+            onChange={(e) => setPost(e.target.value)}
             rows={4}
             className="w-full rounded-md text-gray-900 border-gray-300 shadow-sm focus:border-black focus:ring-black my-5"
             placeholder={
               "e.g. Developer from Orange County, CA. Tweeting about web development, AI, and React / Next.js."
             }
           />
-          <div className="flex mb-5 items-center space-x-3">
-            <div className="bg-black p-[1rem] rounded-full text-lg font-thin text-white relative flex items-center justify-center">
-              <div className="text-white absolute">2</div>
-            </div>
-            <p className="text-left font-medium">Select your vibe.</p>
-          </div>
-          <div className="block">
-            <DropDown vibe={vibe} setVibe={(newVibe) => setVibe(newVibe)} />
-          </div>
 
           {!loading && (
             <button
               className="bg-black text-lg rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
-              onClick={(e) => generateBio(e)}
+              onClick={(e) => generatePost(e)}
             >
-              Generate your bio &rarr;
+              Generate Reponse &rarr;
             </button>
           )}
           {loading && (
@@ -145,37 +139,21 @@ const Home: NextPage = () => {
           reverseOrder={false}
           toastOptions={{ duration: 2000 }}
         />
-        <hr className="h-px bg-gray-700 border-1 dark:bg-gray-700" />
+        <hr className="h-px bg-gray-700 border-1 dark:bg-neutral-700" />
         <ResizablePanel>
           <AnimatePresence mode="wait">
             <motion.div className="space-y-10 my-10">
-              {generatedBios && (
+              {generatedPost && (
                 <>
                   <div>
                     <h2 className="sm:text-4xl text-3xl font-bold text-slate-900 dark:text-white mx-auto">
-                      Your generated bios
+                      Your generated data:
                     </h2>
                   </div>
                   <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto text-gray-900">
-                    {generatedBios
-                      .substring(generatedBios.indexOf("1") + 3)
-                      .split("2.")
-                      .map((generatedBio) => {
-                        return (
-                          <div
-                            className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
-                            onClick={() => {
-                              navigator.clipboard.writeText(generatedBio);
-                              toast("Bio copied to clipboard", {
-                                icon: "✂️",
-                              });
-                            }}
-                            key={generatedBio}
-                          >
-                            <p>{generatedBio}</p>
-                          </div>
-                        );
-                      })}
+                    <div className="bg-white p-5 rounded-lg">
+                      {generatedPost}
+                    </div>
                   </div>
                 </>
               )}
