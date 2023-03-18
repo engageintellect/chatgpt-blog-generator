@@ -1,8 +1,6 @@
-# twitter-bio
+# chatgpt-blog-generator
 
-This project generates Twitter bios for you using AI.
-
-[![Twitter Bio Generator](./public/screenshot.png)](https://www.twitterbio.com)
+This project generates blog posts for you using AI.
 
 ## How it works
 
